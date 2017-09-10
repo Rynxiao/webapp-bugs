@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>click through</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<style>
+		.container {
+			position: relative;
+			width: 300px;
+			height: 300px;
+		}
+		.mask {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: rgba(255, 0, 0, 0.5);
+			z-index: 2;
+		}
+		.link {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 1;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="mask" id="mask"></div>
+		<a id="link" class="link" href="javascript:;">link</a>
+	</div>
+	<script>
+		var mask = document.querySelector('#mask');
+		var link = document.querySelector('#link');
+
+		mask.addEventListener('touchstart', function() {
+			mask.style.display = 'none';
+		});
+
+		link.addEventListener('click', function() {
+			alert('link');
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<title>focus</title>
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style>
+		.container {
+			-webkit-overflow-scrolling: touch;
+		}
+		.test-form {
+			transform: translate3d(0, 40px, 0);
+			transition: transform 0.15s linear;
+		}
+		input {
+			text-shadow: rgba(0,0,0,0) 0px 0px 0px;
+		}
+		input.force-redraw {
+		  	text-shadow: none;
+		}
+		.input-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(255, 0, 0, 0.3);
+			z-index: 2;
+		}
+		.input-link {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background-color: rgba(0, 0, 0, 0.4);
+			z-index: 1;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h3>IOS FOCUS</h3>
+		<form class="form-horizontal test-form" id="testForm">
+		    <div class="form-group">
+		        <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+		        <div class="col-sm-10">
+		            <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+		            <div class="input-overlay" id="overlay"></div>
+		            <a class="input-link" href="javascript:;" id="link">link</a>
+		        </div>
+		    </div>
+		    <div class="form-group">
+		        <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+		        <div class="col-sm-10">
+		            <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+		        </div>
+		    </div>
+		    <div class="form-group">
+		        <div class="col-sm-offset-2 col-sm-10">
+		            <div class="checkbox">
+		                <label>
+		                    <input type="checkbox"> Remember me
+		                </label>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="form-group">
+		        <div class="col-sm-offset-2 col-sm-10">
+		            <button id="submitBtn" class="btn btn-default">Sign in</button>
+		        </div>
+		    </div>
+		</form>
+	</div>
+	<script>
+		var inputEmail3 = document.querySelector('#inputEmail3');
+		var submitBtn = document.querySelector('#submitBtn');
+		var overlay = document.querySelector('#overlay');
+		var link = document.querySelector('#link');
+		var testForm = document.querySelector('#testForm');
+
+		// way1
+		// setTimeout(() => {
+		// 	inputEmail3.focus();
+		// }, 2000);
+
+		submitBtn.onclick = function(e) {
+			e.preventDefault();
+			inputEmail3.focus();
+		}
+
+		inputEmail3.addEventListener('focus', function() {
+			testForm.style.transform = 'translate3d(0, 0, 0)';
+			setTimeout(() => {
+				inputEmail3.className = 'form-control force-redraw';
+			}, 300);
+			
+		});
+		
+		function mockEvent(fn) {
+			var createDiv = document.createElement('div');
+			createDiv.style.display = 'none';
+			document.body.appendChild(createDiv);
+			
+			var e = document.createEvent('MouseEvent'); 
+			e.initEvent('xx', true, true); 
+			
+			createDiv.addEventListener('xx', function() {
+				fn && fn();
+				createDiv.remove();
+			});
+
+			createDiv.dispatchEvent(e); 
+		}
+
+		overlay.addEventListener('touchstart', function(e) {
+			e.preventDefault();
+			testForm.style.transform = 'translate3d(0, 0, 0)';
+			
+			overlay.style.display = 'none';
+			overlay.style.zIndex = -1;
+
+			link.click();
+		});
+
+		link.addEventListener('click', function() {
+			link.style.display = 'none';
+			link.style.zIndex = -1;
+
+			inputEmail3.focus();
+		});
+	</script>
+</body>
+</html>

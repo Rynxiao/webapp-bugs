@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<title>focus</title>
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style>
+		html,body {
+			width: 100%;
+			height: 100%;
+		}
+		.header, .footer {
+			width: 100%;
+			position: absolute;
+			left: 0;
+			height: 48px;
+			line-height: 48px;
+			text-align: center;
+			background-color: #000;
+			color: #fff;
+		}
+		.header {
+			top: 0;
+		}
+		.footer {
+			bottom: 0;
+		}
+		.content {
+			width: 100%;
+			height: 100%;
+			padding-top: 48px;
+			padding-bottom: 48px;
+			-webkit-overflow-scrolling: touch;
+		}
+	</style>
+</head>
+<body>
+	<div class='header' id="header">Header</div>
+	<div class="container content">
+		<h3>Scroll Into View</h3>
+		<p>
+			Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.
+			<br>
+			Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
+			<br>
+			Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
+			<br>
+			Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.
+			<br>
+			Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
+		</p>
+		<form class="form-inline">
+		    <div class="form-group">
+		        <label for="formName">Test input</label>
+		        <input type="text" class="form-control" id="formName" placeholder="Jane Doe">
+		    </div>
+		</form>
+		<p>
+			Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.
+			<br>
+			Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
+			<br>
+			Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
+		</p>
+	</div>
+	<div class="footer" id="footer">footer</div>
+	<script>
+		var isFocused, focusedResizing, ticking = false;
+
+		window.tryfix = function() {
+		  	var inputs = document.getElementsByTagName('input');
+		  	for (var i = 0; i < inputs.length; i++) {
+		    	input = inputs[i];
+		    	input.onfocus = focused;
+		    	input.onblur = blured;
+		  	}
+		  	window.onscroll = onScroll;
+		}
+
+		function focused(event) {
+		  	isFocused = true;
+		  	scrolled();
+		}
+
+		function blured(event) {
+		  	isFocused = false;
+		  	var headStyle = document.getElementById('header').style;
+		  	var footStyle = document.getElementById('footer').style;
+		  	if (focusedResizing) {
+		    	focusedResizing = false;
+		    	headStyle.position = 'fixed';
+		    	headStyle.top = 0;
+		    	footStyle.display = 'block';
+		  	}
+		}
+
+		function onScroll() {
+			if (!ticking) {
+				requestAnimationFrame(scrolled);
+				ticking = true;
+			}
+		}
+
+		function scrolled() {
+		  	var headStyle = document.getElementById('header').style;
+		  	var foot = document.getElementById('footer');
+		  	var footStyle = foot.style;
+		  	if (isFocused) {
+			    if (!focusedResizing) {
+			      	focusedResizing = true;
+			      	headStyle.position = 'absolute';
+			      	footStyle.display = 'none';
+			    } 
+			    headStyle.top = window.pageYOffset + 'px';
+			    // window.innerHeight wrong
+			    //var footTop = window.pageYOffset + window.innerHeight - foot.offsetHeight;
+			    //footStyle.bottom = (document.body.offsetHeight - footTop) + 'px';
+		  }
+		  ticking = false;
+		}
+
+		tryfix();
+
+	</script>
+</body>
+</html>
