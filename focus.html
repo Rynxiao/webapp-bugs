@@ -47,8 +47,8 @@
 		        <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
 		        <div class="col-sm-10">
 		            <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-		            <div class="input-overlay" id="overlay"></div>
-		            <a class="input-link" href="javascript:;" id="link">link</a>
+		            <!-- <div class="input-overlay" id="overlay"></div> -->
+		            <!-- <a class="input-link" href="javascript:;" id="link">link</a> -->
 		        </div>
 		    </div>
 		    <div class="form-group">
@@ -95,7 +95,6 @@
 			setTimeout(() => {
 				inputEmail3.className = 'form-control force-redraw';
 			}, 300);
-			
 		});
 		
 		function mockEvent(fn) {
@@ -114,22 +113,22 @@
 			createDiv.dispatchEvent(e); 
 		}
 
-		overlay.addEventListener('touchstart', function(e) {
-			e.preventDefault();
-			testForm.style.transform = 'translate3d(0, 0, 0)';
+		// overlay.addEventListener('touchstart', function(e) {
+		// 	e.preventDefault();
+		// 	testForm.style.transform = 'translate3d(0, 0, 0)';
 			
-			overlay.style.display = 'none';
-			overlay.style.zIndex = -1;
+		// 	overlay.style.display = 'none';
+		// 	overlay.style.zIndex = -1;
 
-			link.click();
-		});
+		// 	link.click();
+		// });
 
-		link.addEventListener('click', function() {
-			link.style.display = 'none';
-			link.style.zIndex = -1;
+		// link.addEventListener('click', function() {
+		// 	link.style.display = 'none';
+		// 	link.style.zIndex = -1;
 
-			inputEmail3.focus();
-		});
+		// 	inputEmail3.focus();
+		// });
 	</script>
 </body>
 </html>

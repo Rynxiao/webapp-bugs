@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<title>android keyboard</title>
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style>
+		html,body {
+			width: 100%;
+			height: 100%;
+		}
+		.header, .footer {
+			width: 100%;
+			position: fixed;
+			left: 0;
+			height: 48px;
+			line-height: 48px;
+			text-align: center;
+			background-color: #000;
+			color: #fff;
+		}
+		.header {
+			top: 0;
+		}
+		.footer {
+			bottom: 0;
+		}
+		.content {
+			width: 100%;
+			height: 100%;
+			padding-top: 48px;
+			padding-bottom: 48px;
+			-webkit-overflow-scrolling: touch;
+		}
+	</style>
+</head>
+<body>
+	<div class='header' id="header">Header</div>
+	<div class="container content">
+		<h3>Android keyboard</h3>
+		<p>
+			Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.
+			<br>
+			Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
+			<br>
+			Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
+			<br>
+			Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.
+			<br>
+			Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
+		</p>
+		<form class="form-inline">
+		    <div class="form-group">
+		        <label for="formName">Test input</label>
+		        <input type="text" class="form-control" id="formName" placeholder="Jane Doe">
+		    </div>
+		    <div class="form-group">
+		        <label for="formName">Test input2</label>
+		        <input type="text" class="form-control" id="formName2" placeholder="Ryn Xiao">
+		    </div>
+		    <div class="form-group">
+		        <label for="formName">Test input3</label>
+		        <input type="text" class="form-control" id="formName3" placeholder="Jane Doe">
+		    </div>
+		    <div class="form-group">
+		        <label for="formName">Test input4</label>
+		        <input type="text" class="form-control" id="formName4" placeholder="Ryn Xiao">
+		    </div>
+		    <div class="form-group">
+		        <label for="formName">Test input5</label>
+		        <input type="text" class="form-control" id="formName5" placeholder="Jane Doe">
+		    </div>
+		</form>
+		<p>
+			Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.
+			<br>
+			Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
+			<br>
+			Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
+		</p>
+	</div>
+	<div class="footer" id="footer">footer</div>
+	<script>
+		var availHeight = Math.max(document.documentElement.clientHeight || document.body.clientHeight);
+        var inputs = document.getElementsByTagName('input');
+        var textareas = document.getElementsByTagName('textarea');
+        var footer = document.querySelector('#footer');
+        var ftStyle = footer.style;
+        var body = document.body;
+        var keyboardHeight;
+
+	  	for (var i = 0; i < inputs.length; i++) {
+	    	var input = inputs[i];
+	    	input.onfocus = focused;
+	    	input.onblur = blured;
+	  	}
+
+	  	for (var i = 0; i < textareas.length; i++) {
+	    	var textarea = textareas[i];
+	    	textarea.onfocus = focused;
+	    	textarea.onblur = blured;
+	  	}
+
+	  	function mockEvent(type, fn) {
+			var createDiv = document.createElement('div');
+			createDiv.style.display = 'none';
+			document.body.appendChild(createDiv);
+			
+			var e = document.createEvent('MouseEvent'); 
+			e.initEvent(type, true, true); 
+			
+			createDiv.addEventListener(type, function() {
+				fn && fn();
+				createDiv.remove();
+			});
+
+			createDiv.dispatchEvent(e); 
+		}
+
+		function focused() {
+			mockEvent('native.keyboardshow');
+		}
+
+		function blured() {
+			mockEvent('native.keyboardhide');
+		}
+
+	  	function getOffsetTop(el) { 
+		    var mOffsetTop = el.offsetTop; 
+		    var mOffsetParent = el.offsetParent; 
+		    while(mOffsetParent) { 
+		        mOffsetTop += mOffsetParent.offsetTop + mOffsetParent.clientTop; 
+		        mOffsetParent = mOffsetParent.offsetParent; 
+		    } 
+		    return mOffsetTop; 
+		}
+
+        function needPullUpScreen(target, top, height) {
+            var keyboardShow = false;
+            var nodeName = target.nodeName;
+            var leftHeight;
+            var isAndroid = true;
+            if (isAndroid) {
+                leftHeight = availHeight - keyboardHeight;
+            } else {
+                leftHeight = availHeight - keyboardHeight * window.devicePixelRatio;
+            }
+
+            if (nodeName) {
+                if ((top + height + 5) >= leftHeight) {
+                    switch (nodeName.toLowerCase()) {
+                        case 'input':
+                            keyboardShow = target.type !== 'button' && target.type !== 'file';
+                            break;
+                        case 'textarea':
+                            keyboardShow = true;
+                            break;
+                        default:
+                            keyboardShow = false;
+                            break;
+                    }
+                }
+            }
+            return keyboardShow;
+        };
+
+        window.addEventListener('native.keyboardshow', function(e) {
+        	ftStyle.display = 'none';
+            // keyboardHeight = e.keyboardHeight;
+            keyboardHeight = 290;
+            var activeEle = document.activeElement;
+            var boundingClientRect = activeEle.getBoundingClientRect();
+            var top = boundingClientRect.top;
+            var height = boundingClientRect.height;
+
+            // 移到居中位置
+            var moveOffset = top + height  - availHeight / 2;
+            if (activeEle && needPullUpScreen(activeEle, top, height)) {
+                body.style.webkitTransform = `translate3d(0, ${-moveOffset}px, 0)`;
+                body.style.transform = `translate3d(0, ${-moveOffset}px, 0)`;
+                body.style.webkitTransition = 'transform 200ms';
+                body.style.transition = 'transform 200ms';
+            }
+        });
+
+        window.addEventListener('native.keyboardhide', function() {
+            body.style.webkitTransform = '';
+            body.style.transform = '';
+            body.style.webkitTransition = 'transform 200ms';
+            body.style.transition = 'transform 200ms';
+
+            setTimeout(function() {
+				ftStyle.display = '';
+            }, 200);
+        });
+	</script>
+</body>
+</html>

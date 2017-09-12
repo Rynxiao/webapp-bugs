@@ -186,7 +186,7 @@ submitBtn.onclick = function(e) {
   	e.preventDefault();
   	setTimeout(function() {
         inputEmail3.focus();
-    });	
+    }, 200);	
 }
 ```
 
@@ -378,4 +378,155 @@ tryfix();
 ```
 
 另外如果页面缩放，也会引起头部定位不正常。详情可以看[这里](http://bradfrost.com/demo/fixed/index.html)，关于`anroid`上`fixed`的支持情况，可以看[这里](http://bradfrost.com/blog/mobile/fixed-position/)
+
+## 5. Android弹出的键盘遮住输入框
+
+### 5.1 出现场景
+
+当输入框比较靠下时，`android`上弹出键盘，会将输入框遮住。
+
+**说明：**测试了很多机型，发现现在的`android`上的浏览器都貌似修复了这个问题，就是当键盘弹上来的时候，会默认地将输入框上移。但是我在项目中内嵌的`webview`中确实遇到了这种问题。
+
+**测试说明：**测试的机型包括了现在一些主要的浏览器：`chrome`、`UC`、`QQ`、`Opera`、`360`、百度、猎豹，测试的`android`版本包括4.1、4.4、5.1等，测试的浏览器版本都有下载最低的历史版本来测。但是就测试的情况来看，除了猎豹浏览器会出现上述的情况之外，其他的基本表现正常。（更多测试量没做，没有这么多机器呀。尴尬😓）
+
+**逗比时刻：**我为了测试较老的`Android`版本，特地装了`genymotion`，后来发现根本就没有键盘弹出。
+
+总之，如果遇到了上述的问题，不妨可以试试这样的办法。
+
+### 5.2 解决方案
+
+弹出键盘的时候，计算可视区域的高度以及输入框距离视口的高度加上本身的高度（可视区域、自身距离视口高度 + 自身高度）。如果可视区域的高度大于后者，说明此时的输入框需要上移，那么就将`body`向上平移，否则不平移。在键盘消失的时候回归到原来的位置就好。具体可以看如下代码，另外可以看这个例子：[https://jsbin.com/ganiqus](https://jsbin.com/ganiqus)
+
+```javascript
+var availHeight = Math.max(document.documentElement.clientHeight || document.body.clientHeight);
+var inputs = document.getElementsByTagName('input');
+var textareas = document.getElementsByTagName('textarea');
+var footer = document.querySelector('#footer');
+var ftStyle = footer.style;
+var body = document.body;
+var keyboardHeight;
+
+// 绑定事件
+for (var i = 0; i < inputs.length; i++) {
+    var input = inputs[i];
+    input.onfocus = focused;
+    input.onblur = blured;
+}
+
+for (var i = 0; i < textareas.length; i++) {
+    var textarea = textareas[i];
+    textarea.onfocus = focused;
+    textarea.onblur = blured;
+}
+
+// 模拟事件
+function mockEvent(type, fn) {
+    var createDiv = document.createElement('div');
+    createDiv.style.display = 'none';
+    document.body.appendChild(createDiv);
+
+    var e = document.createEvent('MouseEvent'); 
+    e.initEvent(type, true, true); 
+
+    createDiv.addEventListener(type, function() {
+        fn && fn();
+        createDiv.remove();
+    });
+
+    createDiv.dispatchEvent(e); 
+}
+
+function focused() {
+    // 事件模拟
+    mockEvent('native.keyboardshow');
+}
+
+function blured() {
+  mockEvent('native.keyboardhide');
+}
+
+function getOffsetTop(el) { 
+    var mOffsetTop = el.offsetTop; 
+    var mOffsetParent = el.offsetParent; 
+    while(mOffsetParent) { 
+        mOffsetTop += mOffsetParent.offsetTop + mOffsetParent.clientTop; 
+        mOffsetParent = mOffsetParent.offsetParent; 
+    } 
+    return mOffsetTop; 
+}
+
+// 是否需要上移输入框
+function needPullUpScreen(target, top, height) {
+    var keyboardShow = false;
+    var nodeName = target.nodeName;
+    var leftHeight;
+    var isAndroid = true;
+    if (isAndroid) {
+        leftHeight = availHeight - keyboardHeight;
+    } else {
+        leftHeight = availHeight - keyboardHeight * window.devicePixelRatio;
+    }
+
+    if (nodeName) {
+        if ((top + height + 5) >= leftHeight) {
+            switch (nodeName.toLowerCase()) {
+                case 'input':
+                    keyboardShow = target.type !== 'button' && target.type !== 'file';
+                    break;
+                case 'textarea':
+                    keyboardShow = true;
+                    break;
+                default:
+                    keyboardShow = false;
+                    break;
+            }
+        }
+    }
+    return keyboardShow;
+};
+
+// 监听键盘弹出事件
+window.addEventListener('native.keyboardshow', function(e) {
+    ftStyle.display = 'none';
+
+    // 此处获取keyboard的高度，由插件提供，这里写死
+    // keyboardHeight = e.keyboardHeight;
+    keyboardHeight = 290;
+    var activeEle = document.activeElement;
+
+    // getBoundingClientRect 只在android 4.4以上才有用
+    // top和height可用getOffsetTop(el)和el.offsetHeight替代
+    var boundingClientRect = activeEle.getBoundingClientRect();
+    var top = boundingClientRect.top;
+    var height = boundingClientRect.height;
+
+    // 移到居中位置
+    // 这个高度可以根据自己的情况来写
+    var moveOffset = top + height  - availHeight / 2;
+    if (activeEle && needPullUpScreen(activeEle, top, height)) {
+        body.style.webkitTransform = `translate3d(0, ${-moveOffset}px, 0)`;
+        body.style.transform = `translate3d(0, ${-moveOffset}px, 0)`;
+        body.style.webkitTransition = 'transform 200ms';
+        body.style.transition = 'transform 200ms';
+    }
+});
+
+// 监听键盘消失事件
+window.addEventListener('native.keyboardhide', function() {
+    body.style.webkitTransform = '';
+    body.style.transform = '';
+    body.style.webkitTransition = 'transform 200ms';
+    body.style.transition = 'transform 200ms';
+
+    setTimeout(function() {
+        ftStyle.display = '';
+    }, 200);
+});
+```
+
+注意：
+
+- 代码中用到了事件模拟键盘的弹出与消失。如果是在混合`APP`的开发中，应该是有相关插件来监听键盘事件的，同时可以获取键盘的高度
+- 如果旧版本的浏览器不支持`getBoundingClientRect`方法，可以用代码中提供的`getOffsetTop`方法来替代
+- 如果在`IOS`中也遇到这样的问题，此时的键盘高度要乘以设备像素比
 
